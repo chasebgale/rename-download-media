@@ -24,8 +24,7 @@ func main() {
 		return
 	}
 
-	// Format the preferred film name as "Film Name (Year)" by using the date found in the folder name and removing any periods
-	// (This is the format Jellyfin expects)
+	// Format the preferred film name as "Film Name (Year)" by using the date found in the folder name and removing any periods (This is the format Jellyfin expects)
 	// TODO: Perhaps scan original name for dashes and periods and replace whichever is more common, as some rare files use dashes over periods
 	filmWithPeriods := folderName[:dateIdx[0]] + `(` + folderName[dateIdx[0]:dateIdx[1]-1] + `)`
 	filmName := regexp.MustCompile(`\.`).ReplaceAllString(filmWithPeriods, " ")
