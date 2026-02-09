@@ -5,11 +5,13 @@ Add context command (windows) to format media folder and contained file
 ## To use:
 
 1. Compile via `go build main.go`
+   - If you have never used go, simply head to https://go.dev/doc/install and follow the instructions, then navigate to the code folder in file explorer, then right click the blank space and select `Open in terminal` - then type `go build main.go`
 2. Edit `install.reg` to point to the path of the executable you built
 3. Double click `install.reg`
-4. Profit (when right clicking folders you will now have the 'Rename Downloaded Media' command available)
+4. Profit (when right clicking folders you will now have the `Rename Downloaded Media` command available)
 
 ## Notes:
 
-1. On newer windows versions you _may_ have to click 'Show more options' to find the 'Rename Downloaded Media' command
+1. On newer windows versions you _may_ have to click `Show more options` to find the `Rename Downloaded Media` command
 2. This currently only works with folders/files using dot notation, e.g. `Night.of.the.Living.Dead.1968.1080p.REPACK.WEB-DL.AAC2.0.x264`
+3. You can select multiple folders and run the command
