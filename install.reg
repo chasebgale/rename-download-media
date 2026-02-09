@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\shell\Rename Downloaded Media]
+@="&Rename Downloaded Media"
+
+[HKEY_CLASSES_ROOT\Directory\shell\Rename Downloaded Media\command]
+@="\"C:\\Users\\Chase\\go\\src\\rename-download-media\\main.exe\" \"%1\""
