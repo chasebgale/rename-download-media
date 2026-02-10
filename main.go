@@ -11,8 +11,12 @@ import (
 
 func main() {
 
-	// install.reg initializes the context menu command to call this program with the path of the folder that was right-clicked on as the first argument
-    fullPath := os.Args[1]
+	// Note: install.reg initializes the context menu command to call this program with the path of the folder that was right-clicked on as the first argument
+    fullPath, err := getFullPathFromArgs()
+    if err != nil {
+        displayErrorAndWait("Error getting full path.", err)
+        return
+    }
     fmt.Println("path: ", fullPath)
 
 	folderName := folderName(fullPath)
@@ -31,8 +35,7 @@ func main() {
 	fmt.Println("film:", filmName)
 	
 	// Rename the film file with our formatted name
-	// TODO: Upate func to only rename largest media file found to account for sample files, etc
-	err := findAndRenameFilm(fullPath, filmName)
+	err = findAndRenameFilm(fullPath, filmName)
 	if err != nil {
 		displayErrorAndWait("Error renaming film file.", err)
 		return
@@ -47,6 +50,22 @@ func main() {
 	}
 }
 
+func getFullPathFromArgs() (string, error) {
+	if len(os.Args) < 2 {
+		return "", fmt.Errorf("No path argument provided.")
+	}
+
+	if (!filepath.IsAbs(os.Args[1])) {
+		return "", fmt.Errorf(`Provided path "%s" is not an absolute path.`, os.Args[1])
+	}
+
+	if (os.Args[1] == "") {
+		return "", fmt.Errorf("Provided path is empty.")
+	}
+
+	return os.Args[1], nil
+}
+
 func findAndRenameFilm(path string, formattedFilmName string) error {
     c, err := os.ReadDir(path)
     if err != nil {
@@ -56,35 +75,47 @@ func findAndRenameFilm(path string, formattedFilmName string) error {
 	var extensions []string
 	extensions = append(extensions, ".mp4", ".mkv", ".avi")
 
+	var mediaFiles []os.DirEntry
+
     for _, entry := range c {
 		if (entry.IsDir()) {
 			continue
 		}
 
-		var filmPath string
-		name := entry.Name()
-
 		for _, ext := range extensions {
-			if strings.HasSuffix(name, ext) {
-				filmPath = path
+			if strings.HasSuffix(entry.Name(), ext) {
+				mediaFiles = append(mediaFiles, entry)
 				break
 			}
 		}
-
-		if (filmPath == "") {
-			continue
-		}
-
-		oldPath := filepath.Join(path, name)
-		newPath := filepath.Join(path, formattedFilmName+filepath.Ext(name))
-
-		fmt.Println("renaming: ", oldPath, " to ", newPath)
-
-		err := os.Rename(oldPath, newPath)
-		return err
 	}
 
-	return fmt.Errorf("No film found in directory with specified extensions.")
+	if (len(mediaFiles) == 0) {
+		return fmt.Errorf("No film found in directory with specified extensions.")
+	}
+
+	// If there are multiple media files, only rename the largest one
+	var largestFile os.DirEntry
+	var largestFileSize int64 = 0
+
+	for _, entry := range mediaFiles {
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+		if info.Size() > largestFileSize {
+			largestFileSize = info.Size()
+			largestFile = entry
+		}
+	}
+
+	oldPath := filepath.Join(path, largestFile.Name())
+	newPath := filepath.Join(path, formattedFilmName+filepath.Ext(largestFile.Name()))
+
+	fmt.Println("renaming: ", oldPath, " to ", newPath)
+
+	err = os.Rename(oldPath, newPath)
+	return err
 }
 
 func folderName(path string) string {
