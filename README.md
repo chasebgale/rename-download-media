@@ -13,7 +13,7 @@ This renaming tool uses the following formatting logic:
 3. Apply formatted name to the largest media file (".mp4", ".mkv" or ".avi") found within folder.
 4. Apply formatted name to folder.
 
-## To use:
+## Installation:
 
 1. Compile via `go build main.go`
    - If you have never used go, simply head to https://go.dev/doc/install and follow the instructions, then navigate to the code folder in file explorer, then right click the blank space and select `Open in terminal` - then type `go build main.go`
